@@ -31,7 +31,6 @@ parser.add_argument('--adapt_iters', type=int, default=3000, help='number of ite
 parser.add_argument('--finetune_iters', type=int, default=1000, help='number of fine-tuning iters')
 parser.add_argument('--test_interval', type=int, default=500, help='interval of two continuous test phase')
 parser.add_argument('--output_dir', type=str, default='res', help='output directory')
-parser.add_argument('--test_batch', type=int, default=512)
 parser.add_argument('--source_batch', type=int, default=32)
 parser.add_argument('--target_batch', type=int, default=32)
 # optimization args

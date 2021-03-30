@@ -83,7 +83,7 @@ def build_config(args):
         },
         'test': {
             'name': args.target,
-            'batch_size': args.test_batch,
+            'batch_size': 512,
         },
     }
     # set number of classes

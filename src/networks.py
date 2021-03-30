@@ -77,11 +77,13 @@ class AdversarialNetwork(nn.Module):
     return y
 
 
+resnet_dict = {'ResNet18': models.resnet18, 'ResNet34': models.resnet34, 'ResNet50': models.resnet50,
+               'ResNet101': models.resnet101, 'ResNet152': models.resnet152}
+
+
 class ResNetFc(nn.Module):
     def __init__(self, resnet_name, use_bottleneck=True, bottleneck_dim=256, new_cls=False, class_num=1000):
         super(ResNetFc, self).__init__()
-        # models.__dict__[resnet_name](pretrained=True)
-        resnet_dict = {"ResNet18":models.resnet18, "ResNet34":models.resnet34, "ResNet50":models.resnet50, "ResNet101":models.resnet101, "ResNet152":models.resnet152}
         model_resnet = resnet_dict[resnet_name](pretrained=True)
         self.conv1 = model_resnet.conv1
         self.bn1 = model_resnet.bn1
