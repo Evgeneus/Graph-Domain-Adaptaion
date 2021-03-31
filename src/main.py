@@ -79,7 +79,7 @@ def main(args):
     max_inherit_domain = trainer.compute_domain_inheritability(config, base_network, classifier_gnn, temp_test_loaders)
 
     # iterate over all domains
-    for _ in range(config['ndomains']):
+    for _ in range(len(config['data']['target']['name'])):
         print('Starting the adaptation...')
         ######## Step 1: train on the chosen target domain with maximum inheritance ##########
         base_network, classifier_gnn = trainer.adapt_target(config, base_network, classifier_gnn,
