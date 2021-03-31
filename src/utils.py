@@ -94,10 +94,10 @@ def build_config(args):
         config['data']['image_list_root'] = 'data/office-home/'
     elif config['dataset'] == 'domain-net':
         config['encoder']['params']['class_num'] = 345
-        config['data']['image_list_root'] = 'data/pacs/'
+        config['data']['image_list_root'] = 'data/domain-net/'
     elif config['dataset'] == 'pacs':
         config['encoder']['params']['class_num'] = 7
-        config['data']['image_list_root'] = 'data/domain_net/'
+        config['data']['image_list_root'] = 'data/pacs/'
     else:
         raise ValueError('Dataset cannot be recognized. Please define your own dataset here.')
 

@@ -25,7 +25,7 @@ Four datasets are supported:
 # Commands
 ## Office-31
 ```
-python src/main.py 
+python src/main.py \
         --method 'CDAN' \
         --encoder 'ResNet50' \
  	--dataset 'office31' \
