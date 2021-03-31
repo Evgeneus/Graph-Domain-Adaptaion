@@ -1,7 +1,7 @@
 # Curriculum Graph Domain Adaptation
 This repo presents PyTorch implementation of Multi-targe Graph Domain Adaptation framework from ["Curriculum Graph Co-Teaching for Multi-target Domain Adaptation" CVPR 2021](https://arxiv.org/abs/).
 The framework is pivoted around two key concepts: *graph feature aggregation* and *curriculum learning* (see pipeline below or [project web-page](https://roysubhankar.github.io/graph-coteaching-adaptation/)).
-<img src="data/pipeline.png" width="100">
+<img src="data/pipeline.png" width="1000">
 # Results
 <img src="data/results.png" width="600">
 
