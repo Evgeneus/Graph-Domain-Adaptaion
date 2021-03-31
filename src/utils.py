@@ -72,7 +72,6 @@ def build_config(args):
     config['dataset'] = args.dataset
     config['data_root'] = args.data_root
     config['data'] = {
-        'image_list_root': args.image_list_root,
         'source': {
             'name': args.source,
             'batch_size': args.source_batch,
@@ -89,12 +88,16 @@ def build_config(args):
     # set number of classes
     if config['dataset'] == 'office31':
         config['encoder']['params']['class_num'] = 31
+        config['data']['image_list_root'] = 'data/office/'
     elif config['dataset'] == 'office-home':
         config['encoder']['params']['class_num'] = 65
+        config['data']['image_list_root'] = 'data/office-home/'
     elif config['dataset'] == 'domain-net':
         config['encoder']['params']['class_num'] = 345
+        config['data']['image_list_root'] = 'data/pacs/'
     elif config['dataset'] == 'pacs':
         config['encoder']['params']['class_num'] = 7
+        config['data']['image_list_root'] = 'data/domain_net/'
     else:
         raise ValueError('Dataset cannot be recognized. Please define your own dataset here.')
 

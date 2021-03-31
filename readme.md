@@ -1,19 +1,9 @@
-# D-CGCT
-
+# Curriculum Graph Domain Adaptation
+This repo presents PyTorch implementation of Multi-targe Graph Domain Adaptation framework from ["Curriculum Graph Co-Teaching for Multi-target Domain Adaptation" CVPR 2021](https://arxiv.org/abs/).
+The framework is pivoted around two key concepts: *graph feature aggregation* and *curriculum learning* (see pipeline below or [project web-page](https://roysubhankar.github.io/graph-coteaching-adaptation/)).
+<img src="data/pipeline.png" width="275">
 # Results
-# Experiments on Office-31
-
-[comment]: <> (| Method | A->W, D | W->A, D | D->A, W | Avg|)
-
-[comment]: <> (|:-------|:---:|:---:|:---:|:---:|)
-
-[comment]: <> (|ReverseGrad **w/o** labels as in [3]|78.2|69.8|72.2|73.4|)
-
-[comment]: <> (|ReverseGrad **w/o** labels|80.68|81.31|78.76|80.25|)
-
-[comment]: <> (|ReverseGrad **w/** labels|73.68|82.47|81.28|79.14|)
-
-[comment]: <> (|BTDA [3]|90.1|73.4|77.0|80.2|)
+<img src="data/results.png" width="275">
 
 # Environment
 ```
@@ -28,15 +18,18 @@ Four datasets are supported:
 * PACS
 * DomainNet
 
+# Methods
+* CDAN
+* CDAN+E
+
 # Commands
 ##Office-31
 ```
-python src/main.py \
-    --method 'CDAN' \
-    --encoder 'ResNet50' \
+python src/main.py 
+        --method 'CDAN' \
+        --encoder 'ResNet50' \
  	--dataset 'office31' \
- 	--data_root '/data2/ekrivosheev/office31' \
- 	--image_list_root 'data/office/' \
+ 	--data_root [your office31 folder] \
  	--source 'dslr' \
  	--target 'webcam' 'amazon' \
  	--source_iters 200 \
@@ -52,8 +45,7 @@ python src/main.py \
 	--method 'CDAN' \
 	--encoder 'ResNet50' \
 	--dataset 'office-home' \
-	--data_root '/data2/ekrivosheev/OfficeHome' \
-	--image_list_root 'data/office-home/' \
+	--data_root [your OfficeHome folder] \
 	--source 'art' \
 	--target 'clipart' 'product' 'real' \
 	--source_iters 500 \
@@ -63,14 +55,13 @@ python src/main.py \
 	--output_dir 'office-home/art_rest/CDAN' 
 ```
 
-## Pacs
+## PACS
 ```
 python src/main.py \
 	--method 'CDAN' \
 	--encoder 'ResNet50' \
 	--dataset 'pacs' \
-	--data_root '/data2/ekrivosheev/pacs' \
-	--image_list_root 'data/pacs/' \
+	--data_root [your PACS folder] \
 	--source 'photo' \
 	--target 'cartoon' 'art_painting' 'sketch' \
 	--source_iters 200 \
@@ -86,8 +77,7 @@ python src/main.py \
 	--method 'CDAN' \
 	--encoder 'ResNet101' \
 	--dataset 'domain-net' \
-	--data_root 'data/datasets/domain-net' \
-	--image_list_root 'data/domain-net/' \
+	--data_root [your DomainNet folder] \
 	--source 'sketch' \
 	--target 'clipart' 'infograph' 'painting' 'real' 'quickdraw' \
 	--source_iters 5000 \
@@ -96,4 +86,13 @@ python src/main.py \
 	--lambda_node 0.1 \
 	--output_dir 'domain-net/sketch_rest/CDAN'
 ```
-------------
+# Citation
+If you find our paper and code useful for your research, please consider citing our paper.
+```
+@inproceedings{roy2021curriculum,
+  title={Curriculum Graph Co-Teaching for Multi-target Domain Adaptation},
+  author={Roy, Subhankar and Krivosheev, Evgeny and Zhong, Zhun and Sebe, Nicu and Ricci, Elisa},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  year={2021}
+}
+```

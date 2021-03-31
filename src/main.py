@@ -24,7 +24,6 @@ parser.add_argument('--dataset', type=str, default='office31', choices=['office3
 parser.add_argument('--source', default='amazon', help='name of source domain')
 parser.add_argument('--target', nargs='+', default=['dslr', 'webcam'], help='names of target domains')
 parser.add_argument('--data_root', type=str, default='/data/office31', help='path to dataset root')
-parser.add_argument('--image_list_root', type=str, default='data/office', help='path to image list')
 # training args
 parser.add_argument('--source_iters', type=int, default=100, help='number of source pre-train iters')
 parser.add_argument('--adapt_iters', type=int, default=3000, help='number of iters for a curriculum adaptation')
