@@ -1,9 +1,9 @@
 # Curriculum Graph Domain Adaptation
 This repo presents PyTorch implementation of Multi-targe Graph Domain Adaptation framework from ["Curriculum Graph Co-Teaching for Multi-target Domain Adaptation" CVPR 2021](https://arxiv.org/abs/).
 The framework is pivoted around two key concepts: *graph feature aggregation* and *curriculum learning* (see pipeline below or [project web-page](https://roysubhankar.github.io/graph-coteaching-adaptation/)).
-<img src="data/pipeline.png" width="275">
+<img src="data/pipeline.png" width="100">
 # Results
-<img src="data/results.png" width="275">
+<img src="data/results.png" width="600">
 
 # Environment
 ```
@@ -23,7 +23,7 @@ Four datasets are supported:
 * CDAN+E
 
 # Commands
-##Office-31
+## Office-31
 ```
 python src/main.py 
         --method 'CDAN' \
@@ -36,7 +36,7 @@ python src/main.py
  	--adapt_iters 3000 \
  	--finetune_iters 15000 \
  	--lambda_node 0.3 \
- 	--output_dir 'office31/dslr_rest/CDAN'
+ 	--output_dir 'office31-dcgct/dslr_rest/CDAN'
 ```
 
 ## Office-Home
@@ -52,7 +52,7 @@ python src/main.py \
 	--adapt_iters 10000 \
 	--finetune_iters 15000 \
 	--lambda_node 0.3 \
-	--output_dir 'office-home/art_rest/CDAN' 
+	--output_dir 'officeHome-dcgct/art_rest/CDAN' 
 ```
 
 ## PACS
@@ -68,7 +68,7 @@ python src/main.py \
 	--adapt_iters 3000 \
 	--finetune_iters 15000  \
 	--lambda_node 0.1 \
-	--output_dir 'pacs/photo_rest/CDAN'  
+	--output_dir 'pacs-dcgct/photo_rest/CDAN'  
 ```
 
 ## DomainNet
@@ -84,7 +84,7 @@ python src/main.py \
 	--adapt_iters 50000 \
 	--finetune_iters 15000  \
 	--lambda_node 0.1 \
-	--output_dir 'domain-net/sketch_rest/CDAN'
+	--output_dir 'domainNet-dcgct/sketch_rest/CDAN'
 ```
 # Citation
 If you find our paper and code useful for your research, please consider citing our paper.
