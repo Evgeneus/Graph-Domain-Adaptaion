@@ -1,28 +1,28 @@
-# PyTorch code for the paper "Curriculum Graph Co-Teaching for Multi-target Domain Adaptation" (CVPR2021)
+## PyTorch code for the paper "Curriculum Graph Co-Teaching for Multi-target Domain Adaptation" (CVPR2021)
 This repo presents PyTorch implementation of Multi-targe Graph Domain Adaptation framework from ["Curriculum Graph Co-Teaching for Multi-target Domain Adaptation" CVPR 2021](https://arxiv.org/abs/).
 The framework is pivoted around two key concepts: *graph feature aggregation* and *curriculum learning* (see pipeline below or [project web-page](https://roysubhankar.github.io/graph-coteaching-adaptation/)).
 <img src="data/pipeline.png" width="1000">
-# Results
+## Results
 <img src="data/results.png" width="600">
 
-# Environment
+## Environment
 ```
 Python >= 3.6
 PyTorch >= 1.8.1
 ```
 
-# Datasets
+## Datasets
 Four datasets are supported:
 * Office-31
 * Office-Home
 * PACS
 * DomainNet
 
-# Methods
+## Methods
 * CDAN
 * CDAN+E
 
-# Commands
+## Commands
 ## Office-31
 ```
 python src/main.py \
@@ -86,7 +86,7 @@ python src/main.py \
 	--lambda_node 0.1 \
 	--output_dir 'domainNet-dcgct/sketch_rest/CDAN'
 ```
-# Citation
+## Citation
 If you find our paper and code useful for your research, please consider citing our paper.
 ```
 @inproceedings{roy2021curriculum,
