@@ -10,13 +10,22 @@ The framework is pivoted around two key concepts: *graph feature aggregation* an
 Python >= 3.6
 PyTorch >= 1.8.1
 ```
+To install dependencies run (line 1 for pip or line 2 for conda env): 
+```
+pip install -r requirements.txt
+conda install --file requirements.txt
+```
+*Disclaimer.*  This code has been tested with cuda toolkit 10.2. Please install PyTorch as supported by your machine.
+
 
 ## Datasets
 Four datasets are supported:
-* Office-31
-* Office-Home
-* PACS
-* DomainNet
+* Office-31 ([Kate Saenko et al., 2010](https://link.springer.com/content/pdf/10.1007/978-3-642-15561-1_16.pdf))
+* Office-Home ([Venkateswara et al., 2017](https://arxiv.org/abs/1706.07522))
+* PACS ([Li et al., 2017](https://arxiv.org/abs/1710.03077))
+* DomainNet ([Peng et al., 2019](http://ai.bu.edu/M3SDA/))
+
+To run this code, one must check if the txt file names in data/<dataset_name> are matching with the downloaded domain folders. For e.g.,  to run OfficeHome, the domain sub-folders should be art/, clipart/, product/ and real/ corresponding to art.txt, clipart.txt, product.txt and real.txt that can be found in the data/office-home/.
 
 ## Methods
 * CDAN
