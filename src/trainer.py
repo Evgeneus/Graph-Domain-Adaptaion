@@ -27,8 +27,8 @@ def evaluate(i, config, base_network, classifier_gnn, target_test_dset_dict):
     # print out domains averaged accuracy
     mlp_accuracy_avg = sum(mlp_accuracy_list) / len(mlp_accuracy_list)
     gnn_accuracy_avg = sum(gnn_accuracy_list) / len(gnn_accuracy_list)
-    log_str = 'iter: %d, precision clf: %.4f, precision gnn: %.4f'\
-              % (i, mlp_accuracy_avg, gnn_accuracy_avg)
+    log_str = 'iter: %d, Avg Accuracy MLP Classifier: %.4f, Avg Accuracy GNN classifier: %.4f'\
+              % (i, mlp_accuracy_avg * 100., gnn_accuracy_avg * 100.)
     config['out_file'].write(log_str + '\n')
     config['out_file'].flush()
     print(log_str)
@@ -90,25 +90,27 @@ def eval_domain(config, test_loader, base_network, classifier_gnn):
     return out
 
 
-def compute_domain_inheritability(config, base_network, classifier_gnn, temp_test_loaders):
+def select_closest_domain(config, base_network, classifier_gnn, temp_test_loaders):
+    """
+    This function selects the closest domain (Stage 2 in Algorithm 2 of Supp Mat) where adaptation need to be performed.
+    In the code we compute the mean of the max probability of the target samples from a domain, which can be 
+    considered as inversely proportional to the mean of the entropy.
+
+    Higher the max probability == lower is the entropy == higher the inheritability/similarity
+    """
     base_network.eval()
     classifier_gnn.eval()
     max_inherit_val = 0.
     for dset_name, test_loader in temp_test_loaders.items():
         test_res = eval_domain(config, test_loader, base_network, classifier_gnn)
         domain_inheritability = test_res['confidences_gnn'].mean().item()
-        log_str = 'Dataset: %s\tModel Inherit: %.4f\tPseudo Acc: %.4f (%d/%d)\tTot. Samples: %d'\
-                  % (dset_name, domain_inheritability, test_res['pseudo_label_acc'] * 100.,
-                     test_res['correct_pseudo_labels'],  test_res['total_pseudo_labels'], len(test_loader.dataset))
-        config['out_file'].write(log_str + '\n')
-        config['out_file'].flush()
-        print(log_str)
+        
         if domain_inheritability > max_inherit_val:
             max_inherit_val = domain_inheritability
             max_inherit_domain_name = dset_name
 
-    print('Max inheritance domain: %s' % (max_inherit_domain_name))
-    log_str = 'Max inheritance domain: %s' % (max_inherit_domain_name)
+    print('Most similar target domain: %s' % (max_inherit_domain_name))
+    log_str = 'Most similar target domain: %s' % (max_inherit_domain_name)
     config['out_file'].write(log_str + '\n')
     config['out_file'].flush()
     return max_inherit_domain_name
@@ -162,9 +164,10 @@ def train_source(config, base_network, classifier_gnn, dset_loaders):
         optimizer.step()
 
         # printout train loss
-        if i % 20 == 0:
-            print('Iters:(%4d/%d)\tMLP loss:%.4f\tGNN loss:%.4f\tEdge loss:%.4f' % (i,
-                  config['source_iters'], mlp_loss.item(), gnn_loss.item(), edge_loss.item()))
+        if i % 20 == 0 or i == config['source_iters'] - 1:
+            log_str = 'Iters:(%4d/%d)\tMLP loss:%.4f\tGNN loss:%.4f\tEdge loss:%.4f' % (i,
+                  config['source_iters'], mlp_loss.item(), gnn_loss.item(), edge_loss.item())
+            utils.write_logs(config, log_str)
         # evaluate network every test_interval
         if i % config['test_interval'] == config['test_interval'] - 1:
             evaluate(i, config, base_network, classifier_gnn, dset_loaders['target_test'])
@@ -179,9 +182,9 @@ def adapt_target(config, base_network, classifier_gnn, dset_loaders, max_inherit
     # add random layer and adversarial network
     class_num = config['encoder']['params']['class_num']
     random_layer = networks.RandomLayer([base_network.output_num(), class_num], config['random_dim'], DEVICE)
-    print(random_layer)
+    
     adv_net = networks.AdversarialNetwork(config['random_dim'], config['random_dim'], config['ndomains'])
-    print(adv_net)
+    
     random_layer.to(DEVICE)
     adv_net = adv_net.to(DEVICE)
 
@@ -260,10 +263,12 @@ def adapt_target(config, base_network, classifier_gnn, dset_loaders, max_inherit
         loss.backward()
         optimizer.step()
         # printout train loss
-        if i % 20 == 0:
-            print('Iters:(%4d/%d)\tMLP loss: %.4f\t GNN Loss: %.4f\t Edge Loss: %.4f\t Transfer loss:%.4f'
-                  % (i, config["adapt_iters"], mlp_loss.item(), config['lambda_node'] * gnn_loss.item(),
-                     config['lambda_edge'] * edge_loss.item(), config['lambda_adv'] * trans_loss.item()))
+        if i % 20 == 0 or i == config['adapt_iters'] - 1:
+            log_str = 'Iters:(%4d/%d)\tMLP loss: %.4f\t GNN Loss: %.4f\t Edge Loss: %.4f\t Transfer loss:%.4f' % (
+                i, config["adapt_iters"], mlp_loss.item(), config['lambda_node'] * gnn_loss.item(),
+                config['lambda_edge'] * edge_loss.item(), config['lambda_adv'] * trans_loss.item()
+            )
+            utils.write_logs(config, log_str)
         # evaluate network every test_interval
         if i % config['test_interval'] == config['test_interval'] - 1:
             evaluate(i, config, base_network, classifier_gnn, dset_loaders['target_test'])
@@ -283,11 +288,12 @@ def upgrade_source_domain(config, max_inherit_domain, dsets, dset_loaders, base_
     test_res = eval_domain(config, target_loader, base_network, classifier_gnn)
 
     # print out logs for domain
-    log_str = 'Adding pseudo labels of dataset: %s\tPseudo acc: %.4f (%d/%d)\t Total samples: %d' \
+    log_str = 'Adding pseudo labels of dataset: %s\tPseudo-label acc: %.4f (%d/%d)\t Total samples: %d' \
               % (max_inherit_domain, test_res['pseudo_label_acc'] * 100., test_res['correct_pseudo_labels'],
                  test_res['total_pseudo_labels'], len(target_loader.dataset))
-    config["out_file"].write(str(log_str) + '\n')
+    config["out_file"].write(str(log_str) + '\n\n')
     config["out_file"].flush()
+    print(log_str + '\n')
 
     # sub sample the dataset with the chosen confident pseudo labels
     pseudo_source_dataset = ImageList(image_root=config['data_root'],

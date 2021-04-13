@@ -159,3 +159,8 @@ def build_data(config):
                                                             batch_size=test_bs, num_workers=config['num_workers'],
                                                             pin_memory=True)
     return dsets, dset_loaders
+
+def write_logs(config, log_str):
+    config['out_file'].write(log_str + '\n')
+    config['out_file'].flush()
+    print(log_str)
