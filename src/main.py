@@ -53,6 +53,8 @@ def main(args):
     torch.backends.cudnn.benchmark = False
     torch.backends.cudnn.deterministic = True
 
+    assert args.source not in args.target, 'Source domain can not be one of the target domains'
+
     # create train configurations
     config = utils.build_config(args)
     # prepare data
@@ -71,35 +73,48 @@ def main(args):
     print(classifier_gnn)
 
     # train on source domain and compute domain inheritability
-    base_network, classifier_gnn = trainer.train_source(config, base_network, classifier_gnn, dset_loaders)
+    log_str = '==> Step 1: Pre-training on the source dataset ...'
+    utils.write_logs(config, log_str)
 
-    # find the maximum inheritability domain
+    base_network, classifier_gnn = trainer.train_source(config, base_network, classifier_gnn, dset_loaders)
+    log_str = '==> Finished pre-training on source!\n'
+    utils.write_logs(config, log_str)
+
+    log_str = '==> Step 2: Curriculum learning ...'
+    utils.write_logs(config, log_str)
+
+    ######## Stage 1: find the closest target domain ##########
     temp_test_loaders = dict(dset_loaders['target_test'])
-    max_inherit_domain = trainer.compute_domain_inheritability(config, base_network, classifier_gnn, temp_test_loaders)
+    max_inherit_domain = trainer.select_closest_domain(config, base_network, classifier_gnn, temp_test_loaders)
 
     # iterate over all domains
     for _ in range(len(config['data']['target']['name'])):
-        print('Starting the adaptation...')
-        ######## Step 1: train on the chosen target domain with maximum inheritance ##########
+        log_str = '==> Starting the adaptation on {} ...'.format(max_inherit_domain)
+        utils.write_logs(config, log_str)
+        ######## Stage 2: adapt to the chosen target domain having the maximum inheritance/similarity ##########
         base_network, classifier_gnn = trainer.adapt_target(config, base_network, classifier_gnn,
                                                             dset_loaders, max_inherit_domain)
+        log_str = '==> Finishing the adaptation on {}!\n'.format(max_inherit_domain)
+        utils.write_logs(config, log_str)
 
-        ######### Step 2: obtain the target pseudo labels and upgrade source domain ##########
+        ######### Stage 3: obtain the target pseudo labels and upgrade source domain ##########
         trainer.upgrade_source_domain(config, max_inherit_domain, dsets,
                                       dset_loaders, base_network, classifier_gnn)
 
-        ######### Step 3: recompute model inheritability ###########
+        ######### Sage 1: recompute target domain inheritability/similarity ###########
         # remove already considered domain
         del temp_test_loaders[max_inherit_domain]
-        # find the maximum inheritability domain
+        # find the maximum inheritability/similarity domain
         if len(temp_test_loaders.keys()) > 0:
-            print(temp_test_loaders.keys())
-            max_inherit_domain = trainer.compute_domain_inheritability(config, base_network,
+            max_inherit_domain = trainer.select_closest_domain(config, base_network,
                                                                        classifier_gnn, temp_test_loaders)
-    ######### Step 4: fine-tuning stage ###########
+    ######### Step 3: fine-tuning stage ###########
+    log_str = '==> Step 3: Fine-tuning on pseudo-source dataset ...'
+    utils.write_logs(config, log_str)
     config['source_iters'] = config['finetune_iters']
     base_network, classifier_gnn = trainer.train_source(config, base_network, classifier_gnn, dset_loaders)
-    print('Finished training and evaluation!')
+    log_str = 'Finished training and evaluation!'
+    utils.write_logs(config, log_str)
 
     # save models
     if args.save_models:
