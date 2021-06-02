@@ -47,6 +47,20 @@ python src/main.py \
  	--lambda_node 0.3 \
  	--output_dir 'office31-dcgct/dslr_rest/CDAN'
 ```
+```
+python src/main_cgct.py \
+        --method 'CDAN' \
+        --encoder 'ResNet50' \
+ 	--dataset 'office31' \
+ 	--data_root [your office31 folder] \
+ 	--source 'dslr' \
+ 	--target 'webcam' 'amazon' \
+ 	--source_iters 100 \
+ 	--adapt_iters 3000 \
+ 	--finetune_iters 15000 \
+ 	--lambda_node 0.1 \
+ 	--output_dir 'office31-cgct/dslr_rest/CDAN'
+```
 
 ## Office-Home
 ```

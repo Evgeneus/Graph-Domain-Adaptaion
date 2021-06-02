@@ -34,6 +34,7 @@ def build_config(args):
         'lambda_node': args.lambda_node,
         'lambda_adv': args.lambda_adv,
         'random_dim': args.rand_proj,
+        'use_cgct_mask': args.use_cgct_mask if 'use_cgct_mask' in args else False,
     }
     # preprocessing params
     config['prep'] = {
@@ -146,11 +147,13 @@ def build_data(config):
         dsets['target_train'][dset_name] = ImageList(image_root=config['data_root'],
                                                      image_list_root=data_config['image_list_root'],
                                                      dataset=dset_name, transform=config['prep']['target'],
-                                                     domain_label=1, dataset_name=config['dataset'], split='train')
+                                                     domain_label=1, dataset_name=config['dataset'], split='train',
+                                                     use_cgct_mask=config['use_cgct_mask'])
         dsets['target_test'][dset_name] = ImageList(image_root=config['data_root'],
                                                     image_list_root=data_config['image_list_root'],
                                                     dataset=dset_name, transform=config['prep']['test'],
-                                                    domain_label=1, dataset_name=config['dataset'], split='test')
+                                                    domain_label=1, dataset_name=config['dataset'], split='test',
+                                                    use_cgct_mask=config['use_cgct_mask'])
         # create train and test dataloaders for a target domain
         dset_loaders['target_train'][dset_name] = DataLoader(dataset=dsets['target_train'][dset_name],
                                                              batch_size=target_bs, shuffle=True,
@@ -159,6 +162,7 @@ def build_data(config):
                                                             batch_size=test_bs, num_workers=config['num_workers'],
                                                             pin_memory=True)
     return dsets, dset_loaders
+
 
 def write_logs(config, log_str):
     config['out_file'].write(log_str + '\n')

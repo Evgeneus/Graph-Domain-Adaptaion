@@ -123,7 +123,7 @@ https://github.com/thuml/CDAN/tree/master/pytorch
 
 class ImageList(Dataset):
     def __init__(self, image_root, image_list_root, dataset, domain_label, dataset_name, split='train', transform=None, 
-                 sample_masks=None, pseudo_labels=None):
+                 sample_masks=None, pseudo_labels=None, use_cgct_mask=False):
         self.image_root = image_root
         self.dataset = dataset  # name of the domain
         self.dataset_name = dataset_name  # name of whole dataset
@@ -131,17 +131,28 @@ class ImageList(Dataset):
         self.loader = self._rgb_loader
         self.sample_masks = sample_masks
         self.pseudo_labels = pseudo_labels
+        self.use_cgct_mask = use_cgct_mask
         if dataset_name == 'domain-net':
             imgs = self._make_dataset(os.path.join(image_list_root, dataset + '_' + split + '.txt'), domain_label)
         else:
             imgs = self._make_dataset(os.path.join(image_list_root, dataset + '.txt'), domain_label)
         self.imgs = imgs
-        if sample_masks is not None:
-            temp_list = self.imgs
-            self.imgs = [temp_list[i] for i in self.sample_masks]
+
+        # CGCT and D-CGCT use different mask type for pseudo labels in target data
+        # D-CGCT retrieves samples with high confidence from target data and discard others
+        # CGCT keeps all samples but uses the mask for high confidence samples
+        if self.use_cgct_mask:
+            self.sample_masks = sample_masks if sample_masks is not None else torch.zeros(len(self.imgs)).float()
             if pseudo_labels is not None:
-                self.labels = self.pseudo_labels[self.sample_masks]
+                self.labels = self.pseudo_labels
                 assert len(self.labels) == len(self.imgs), 'Lengths do no match!'
+        else:
+            if sample_masks is not None:
+                temp_list = self.imgs
+                self.imgs = [temp_list[i] for i in self.sample_masks]
+                if pseudo_labels is not None:
+                    self.labels = self.pseudo_labels[self.sample_masks]
+                    assert len(self.labels) == len(self.imgs), 'Lengths do no match!'
 
     def _rgb_loader(self, path):
         with open(path, 'rb') as f:
@@ -172,6 +183,8 @@ class ImageList(Dataset):
             output['target'] = torch.squeeze(torch.LongTensor([np.int64(target).item()]))
         output['domain'] = domain
         output['idx'] = index
+        if self.use_cgct_mask:
+            output['mask'] = torch.squeeze(torch.LongTensor([np.int64(self.sample_masks[index]).item()]))
 
         return output
 
