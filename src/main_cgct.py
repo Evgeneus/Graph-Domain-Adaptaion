@@ -75,7 +75,13 @@ def main(args):
     print(classifier_gnn)
 
     # train on source domain
+    log_str = '==> Step 1: Pre-training on the source dataset ...'
+    utils.write_logs(config, log_str)
+
     base_network, classifier_gnn = trainer.train_source(config, base_network, classifier_gnn, dset_loaders)
+
+    log_str = '==> Finished pre-training on source!\n'
+    utils.write_logs(config, log_str)
 
     # create random layer and adversarial network
     class_num = config['encoder']['params']['class_num']
@@ -87,8 +93,9 @@ def main(args):
     print(adv_net)
 
     # run adaptation episodes
+    log_str = '==> Starting the adaptation'
+    utils.write_logs(config, log_str)
     for curri_iter in range(len(config['data']['target']['name'])):
-        print('Starting the adaptation...')
         ######## Step 1: train one adaptation episod on combined target domains ##########
         target_train_datasets = preprocess.ConcatDataset(dsets['target_train'].values())
         dset_loaders['target_train'] = DataLoader(dataset=target_train_datasets,
@@ -99,13 +106,21 @@ def main(args):
         base_network, classifier_gnn = trainer.adapt_target_cgct(config, base_network, classifier_gnn,
                                                                  dset_loaders, random_layer, adv_net)
 
+        log_str = '==> Finishing {} adaptation episode!\n'.format(curri_iter)
+        utils.write_logs(config, log_str)
+
         ######### Step 2: obtain the target pseudo labels and upgrade target domains ##########
         trainer.upgrade_target_domains(config, dsets, dset_loaders, base_network, classifier_gnn, curri_iter)
 
     ######### Step 3: fine-tuning stage ###########
+    log_str = '==> Step 3: Fine-tuning on pseudo-source dataset ...'
+    utils.write_logs(config, log_str)
+
     config['source_iters'] = config['finetune_iters']
     base_network, classifier_gnn = trainer.train_source(config, base_network, classifier_gnn, dset_loaders)
-    print('Finished training and evaluation!')
+
+    log_str = 'Finished training and evaluation!'
+    utils.write_logs(config, log_str)
 
     # save models
     if args.save_models:

@@ -33,38 +33,40 @@ To run this code, one must check if the txt file names in data/<dataset_name> ar
 
 ## Commands
 ## Office-31
+Run D-CGCT:
 ```
-python src/main.py \
+python src/main_dcgct.py \
         --method 'CDAN' \
         --encoder 'ResNet50' \
  	--dataset 'office31' \
  	--data_root [your office31 folder] \
- 	--source 'dslr' \
- 	--target 'webcam' 'amazon' \
+ 	--source 'webcam' \
+ 	--target 'dslr' 'amazon' \
  	--source_iters 200 \
  	--adapt_iters 3000 \
  	--finetune_iters 15000 \
  	--lambda_node 0.3 \
- 	--output_dir 'office31-dcgct/dslr_rest/CDAN'
+ 	--output_dir 'office31-dcgct/webcam_rest/CDAN'
 ```
+Run CGCT:
 ```
 python src/main_cgct.py \
         --method 'CDAN' \
         --encoder 'ResNet50' \
  	--dataset 'office31' \
  	--data_root [your office31 folder] \
- 	--source 'dslr' \
- 	--target 'webcam' 'amazon' \
+ 	--source 'webcam' \
+ 	--target 'dslr' 'amazon' \
  	--source_iters 100 \
  	--adapt_iters 3000 \
  	--finetune_iters 15000 \
  	--lambda_node 0.1 \
- 	--output_dir 'office31-cgct/dslr_rest/CDAN'
+ 	--output_dir 'office31-cgct/webcam_rest/CDAN'
 ```
 
 ## Office-Home
 ```
-python src/main.py \
+python src/main_dcgct.py \
 	--method 'CDAN' \
 	--encoder 'ResNet50' \
 	--dataset 'office-home' \
@@ -77,10 +79,24 @@ python src/main.py \
 	--lambda_node 0.3 \
 	--output_dir 'officeHome-dcgct/art_rest/CDAN' 
 ```
+```
+python src/main_cgct.py \
+	--method 'CDAN' \
+	--encoder 'ResNet50' \
+	--dataset 'office-home' \
+	--data_root [your OfficeHome folder] \
+	--source 'art' \
+	--target 'clipart' 'product' 'real' \
+	--source_iters 500 \
+	--adapt_iters 5000 \
+	--finetune_iters 15000 \
+	--lambda_node 0.1 \
+	--output_dir 'officeHome-cgct/art_rest/CDAN' 
+```
 
 ## PACS
 ```
-python src/main.py \
+python src/main_dcgct.py \
 	--method 'CDAN' \
 	--encoder 'ResNet50' \
 	--dataset 'pacs' \
@@ -93,10 +109,24 @@ python src/main.py \
 	--lambda_node 0.1 \
 	--output_dir 'pacs-dcgct/photo_rest/CDAN'  
 ```
+```
+python src/main_cgct.py \
+	--method 'CDAN' \
+	--encoder 'ResNet50' \
+	--dataset 'pacs' \
+	--data_root [your PACS folder] \
+	--source 'photo' \
+	--target 'cartoon' 'art_painting' 'sketch' \
+	--source_iters 200 \
+	--adapt_iters 3000 \
+	--finetune_iters 15000  \
+	--lambda_node 0.1 \
+	--output_dir 'pacs-cgct/photo_rest/CDAN'  
+```
 
 ## DomainNet
 ```
-python src/main.py \
+python src/main_dcgct.py \
 	--method 'CDAN' \
 	--encoder 'ResNet101' \
 	--dataset 'domain-net' \
@@ -106,8 +136,22 @@ python src/main.py \
 	--source_iters 5000 \
 	--adapt_iters 50000 \
 	--finetune_iters 15000  \
-	--lambda_node 0.1 \
+	--lambda_node 0.3 \
 	--output_dir 'domainNet-dcgct/sketch_rest/CDAN'
+```
+```
+python src/main_cgct.py \
+	--method 'CDAN' \
+	--encoder 'ResNet101' \
+	--dataset 'domain-net' \
+	--data_root [your DomainNet folder] \
+	--source 'sketch' \
+	--target 'clipart' 'infograph' 'painting' 'real' 'quickdraw' \
+	--source_iters 5000 \
+	--adapt_iters 50000 \
+	--finetune_iters 15000  \
+	--lambda_node 0.3 \
+	--output_dir 'domainNet-cgct/sketch_rest/CDAN'
 ```
 ## Citation
 If you find our paper and code useful for your research, please consider citing our paper.

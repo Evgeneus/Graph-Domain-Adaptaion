@@ -5,7 +5,7 @@ import transfer_loss
 from preprocess import ImageList, ConcatDataset
 from torch.utils.data import DataLoader
 import utils
-from main import DEVICE
+from main_dcgct import DEVICE
 
 
 def evaluate(i, config, base_network, classifier_gnn, target_test_dset_dict):
@@ -56,9 +56,7 @@ def eval_domain(config, test_loader, base_network, classifier_gnn):
             logits_gnn_all.append(logits_gnn.cpu())
             confidences_gnn_all.append(nn.Softmax(dim=1)(logits_gnn_all[-1]).max(1)[0])
             labels_all.append(data['target'])
-            # TODO:
-            if i == 1:
-                break
+
     # concatenate data
     logits_mlp = torch.cat(logits_mlp_all, dim=0)
     logits_gnn = torch.cat(logits_gnn_all, dim=0)
@@ -428,7 +426,7 @@ def upgrade_target_domains(config, dsets, dset_loaders, base_network, classifier
         test_res = eval_domain(config, target_loader, base_network, classifier_gnn)
 
         # print out logs for domain
-        log_str = 'Adding pseudo labels of dataset: %s\tPseudo-label acc: %.4f (%d/%d)\t Total samples: %d' \
+        log_str = 'Updating pseudo labels of dataset: %s\tPseudo-label acc: %.4f (%d/%d)\t Total samples: %d' \
                   % (target_domain, test_res['pseudo_label_acc'] * 100., test_res['correct_pseudo_labels'],
                      test_res['total_pseudo_labels'], len(target_loader.dataset))
         config["out_file"].write(str(log_str) + '\n\n')
