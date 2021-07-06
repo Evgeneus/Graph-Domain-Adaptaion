@@ -442,7 +442,7 @@ def upgrade_target_domains(config, dsets, dset_loaders, base_network, classifier
                                        pseudo_labels=test_res['pred_cls'], use_cgct_mask=True)
         target_dsets_new[target_domain] = target_dataset_new
 
-        if curri_iter == config['ndomains'] - 1:
+        if curri_iter == len(config['data']['target']['name']) - 1:
             # sub sample the dataset with the chosen confident pseudo labels
             target_dataset_new = ImageList(image_root=config['data_root'],
                                            image_list_root=config['data']['image_list_root'],
@@ -455,7 +455,7 @@ def upgrade_target_domains(config, dsets, dset_loaders, base_network, classifier
             dsets['source'] = ConcatDataset((dsets['source'], target_dataset_new))
     dsets['target_train'] = target_dsets_new
 
-    if curri_iter == config['ndomains'] - 1:
+    if curri_iter == len(config['data']['target']['name']) - 1:
         # create new source dataloader
         dset_loaders['source'] = DataLoader(dsets['source'], batch_size=config['data']['source']['batch_size'] * 2,
                                             shuffle=True, num_workers=config['num_workers'],
